@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style Transfer App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(circle, #003300, #004d00);
+            background-image: url('https://www.transparenttextures.com/patterns/black-tile.png'), linear-gradient(135deg, rgba(0, 128, 0, 0.6), rgba(0, 255, 0, 0.3));
+            background-size: 30px 30px, 100% 100%;
+            background-position: 0 0, center center;
+            color: #f0f0f0;
+            margin: 0;
+            padding: 40px 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            backdrop-filter: blur(12px);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 25px;
+            color: #ffffff;
+        }
+
+        input[type="file"] {
+            padding: 12px;
+            margin-bottom: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            color: #ffffff;
+            width: 80%;
+        }
+
+        button {
+            padding: 12px 25px;
+            background-color: #00c9a7;
+            color: #000;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            width: 80%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #00b38f;
+            transform: scale(1.05);
+        }
+
+        .output-container {
+            margin-top: 30px;
+        }
+
+        .output-container img {
+            width: 100%;
+            border-radius: 15px;
+            border: 2px solid #ffffff33;
+        }
+
+        #loading {
+            margin-top: 20px;
+            color: #851d1d;
+            font-weight: bold;
+            display: none;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 14px;
+            color: #0c0a0a;
+        }
+
+        .footer a {
+            color: #5a8d87;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px #4f6563;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Upload Your Images for Style Transfer</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="showLoading()">
+            <div>
+                <label for="content">Content Image:</label>
+                <input type="file" name="content" required><br>
+            </div>
+            <div>
+                <label for="style">Style Image:</label>
+                <input type="file" name="style" required><br>
+            </div>
+            <button type="submit">Generate Stylized Image</button>
+        </form>
+
+        <!-- 🟡 Processing Message -->
+        <div id="loading">
+            ⏳ Processing your image... Please wait.
+        </div>
+
+        {% if image_url %}
+        <div class="output-container">
+            <h3>Your Stylized Image:</h3>
+            <img src="{{ image_url }}" alt="Stylized Image">
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p class="footer">Created with ❤️ by <a href="https://github.com/Mrinnovater"
+                    target="_blank">Shiva_Innovator</a></p>
+        </div>
+    </div>
+
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+        window.onload = () => {
+            document.getElementById('loading').style.display = 'none';
+        };
+    </script>
+</body>
+
+</html>
