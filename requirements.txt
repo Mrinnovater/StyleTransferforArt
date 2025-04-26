@@ -3,6 +3,7 @@ astunparse==1.6.3
 certifi==2025.1.31
 charset-normalizer==3.4.1
 flatbuffers==25.2.10
+flask        # <------ ADD THIS LINE
 gast==0.6.0
 google-pasta==0.2.0
 grpcio==1.72.0
