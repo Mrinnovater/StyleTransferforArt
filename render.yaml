@@ -2,11 +2,12 @@ services:
   - type: web
     name: your-app-name
     env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
     plan: free
-    buildCommand: |
-      pip install -r requirements.txt
-    startCommand: |
-      gunicorn app:app
+    region: oregon
+    branch: main
+    healthCheckPath: /
     envVars:
-      - key: PYTHON_VERSION
-        value: 3.10
+      - key: PORT
+        value: 10000
