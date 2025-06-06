@@ -5,16 +5,21 @@ import numpy as np
 from PIL import Image
 import pickle
 import os
-from utils.style_transfer_utils import load_image, style_transfer
+from utils.style_transfer_utils import load_image
 
-# Cache TensorFlow Hub modules locally
+# Set local TF Hub cache
 os.environ['TFHUB_CACHE_DIR'] = './tfhub_cache'
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load pre-trained style transfer model from TF Hub (fast version)
+# Load pre-trained style transfer model
 hub_model = hub.load('https://tfhub.dev/google/magenta/arbitrary-image-stylization-v1-256/2')
+
+# Optimize model call with tf.function
+@tf.function
+def stylize(content, style):
+    return hub_model(content, style)[0]
 
 @app.route('/')
 def index():
@@ -22,31 +27,27 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload_image():
-    # Read uploaded files
     content_bytes = request.files['content'].read()
     style_bytes = request.files['style'].read()
 
-    # Preprocess
     content_image = load_image(content_bytes)
     style_image = load_image(style_bytes)
 
-    # Apply style transfer using TF Hub (optimized, instant)
-    stylized_image = hub_model(tf.constant(content_image), tf.constant(style_image))[0]
+    stylized_image = stylize(content_image, style_image)
 
-    # Convert tensor to image
+    # Convert and save as image
+    output_path = 'static/generated_img.jpg'
     final_image = tf.squeeze(stylized_image) * 255
     final_image = tf.cast(final_image, tf.uint8).numpy()
-    img = Image.fromarray(final_image)
+    Image.fromarray(final_image).save(output_path)
 
-    output_path = 'static/generated_img.jpg'
-    img.save(output_path)
+    # Optional: Save numpy result
+    with open('static/generated_img.pkl', 'wb') as f:
+        pickle.dump(stylized_image.numpy(), f)
 
-    # Save as .pkl
-    with open('static/generated_img.pkl', 'wb') as file:
-        pickle.dump(stylized_image.numpy(), file)
-
-    return render_template('index.html', image_url='/static/generated_img.jpg')
+    return render_template('index.html', image_url='/' + output_path)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=5000)
